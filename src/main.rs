@@ -454,8 +454,225 @@ fn main() {
             },
             Err(error) => panic!("Couldn't open the file : {:?}", error),
         };
-        
+
+        // unwrap on a Result will return the val in case of Ok(val)
+        //  or panic! in case of Err
         let f = File::open("hello.txt").unwrap();
+
+        // expect : Same with the error message
+        let f = File::open("hello.txt").expect("Failed to open hello.txt");
+
+        {
+            use std::io;
+            use std::io::Read;
+            use std::fs::File;
+
+            fn read_username_from_file() -> Result<String, io::Error> {
+                let f = File::open("hello.txt");
+
+                let mut f = match f {
+                    Ok(file) => file,
+                    Err(e) => return Err(e),
+                };
+
+                let mut s = String::new();
+
+                match f.read_to_string(&mut s) {
+                    Ok(_) => Ok(s),
+                    Err(e) => Err(e),
+                }
+            }
+
+            // Appending the question mark '?' to the function call automatically propagates
+            // (returns) the error message in case of Result::Err
+            // Only for functions returning a Result
+            fn read_username_from_file_2() -> Result<String, io::Error> {
+                let mut f = File::open("hello.txt")?;
+                let mut s = String::new();
+                f.read_to_string(&mut s)?;
+                Ok(s)
+            }
+            fn read_username_from_file_3() -> Result<String, io::Error> {
+                let mut s = String::new();
+                File::open("hello.txt")?.read_to_string(&mut s)?;
+                Ok(s)
+            }
+        }
+    }
+    // ------------------------------
+    // Generics, Traits, lifetimes
+    {
+        {
+            // ------------------------------
+            // Generics
+            fn largest<T: PartialOrd>(list: &[T]) -> &T {
+                let mut largest = &list[0];
+
+                for item in list.iter() {
+                    if item > largest {
+                        largest = item;
+                    }
+                }
+
+                largest
+            }
+
+            let list = [0, 2, 4, 1, 5, 6, 7, 642, 914, 66, 75];
+            println!("The largest of the list : {}.", largest(&list));
+
+            struct Point<T> {
+                x: T,
+                y: T,
+            }
+
+            impl<T> Point<T> {
+                fn x(&self) -> &T {
+                    &self.x
+                }
+            }
+
+            impl Point<f32> {
+                fn distance_from_origin(&self) -> f32 {
+                    (self.x.powi(2) + self.y.powi(2)).sqrt()
+                }
+            }
+        }
+        // ------------------------------
+        // Traits
+        {
+            trait Summarizable {
+                fn summary(&self) -> String;
+                fn default(&self) -> String {
+                    format!("Default behavior for this method : {}", self.summary())
+                }
+            }
+
+            struct Novel {
+                text: String
+            }
+
+            impl Summarizable for Novel {
+                fn summary(&self) -> String {
+                    format!("{}...", &self.text[0..40])
+                }
+            }
+
+            fn get_summary<T: Summarizable>(text: &T) {
+                println!("{}", text.summary());
+            }
+
+            let nov = Novel {
+                text: String::from(
+                          "This is a great story with very interesting characters. They go through some long and weary adventure wich make them hate each other at first, but they eventually get back together and end even closer than they began. The end !"
+                          )
+            };
+            get_summary(&nov);
+            println!("{}", nov.default());
+
+            // With generics :
+            trait Testable<T> {
+                fn test(&self, t: T) -> (T,&T);
+            }
+            struct Tested<T> {
+                x: T
+            }
+
+            impl<T> Testable<T> for Tested<T> {
+                fn test(&self, t: T) -> (T,&T) {
+                    (t, &self.x)
+                }
+            }
+
+            let test_var = (Tested { x: 5 }).test(4);
+            println!("{} {}", test_var.0, test_var.1);
+
+            // Using multiple traits at the same time
+            fn some_function<T: Testable<u32> + Clone, U: Clone + Summarizable>(t: T, u: U) -> i32 { 3 }
+            fn some_function_2<T, U>(t: T, u: U) -> i32
+                where T: Testable<u32> + Clone,
+                      U: Clone + Summarizable
+                      { 3 }
+
+            // Defining methods only for certain traits
+            use std::fmt::Display;
+
+            struct Pair<T> {
+                x: T,
+                y: T,
+            }
+
+            impl<T> Pair<T> {
+                fn new(x: T, y: T) -> Self {
+                    Self {
+                        x,
+                        y,
+                    }
+                }
+            }
+
+            impl<T: Display + PartialOrd> Pair<T> {
+                fn cmp_display(&self) {
+                    if self.x >= self.y {
+                        println!("The largest member is x = {}", self.x);
+                    } else {
+                        println!("The largest member is y = {}", self.y);
+                    }
+                }
+            }
+
+            // Blanket implementations
+            // Implements the ToString trait for all types implementing Display :
+            // impl<T: Display> ToString for T {}
+        }
+        // ------------------------------
+        // Lifetimes :
+        {
+            // name starting with an apostroph : 'a
+            // The return value must, at maximum, have the lifetime of the shortest lifetime
+            // of the acguments
+            fn longest<'a>(string1: &'a str, string2: &'a str) -> &'a str {
+                if string1.len() > string2.len() {
+                    string1
+                }
+                else {
+                    string2
+                }
+            }
+
+            let string1 = String::from("abcd");
+            let string2 = "xyz";
+
+            let result = longest(string1.as_str(), string2);
+            println!("The longest string is {}", result);
+
+            // Refs in structs need lifetines :
+            struct ImportantExcept<'a> {
+                part: &'a str,
+            }
+
+            fn test<'a, 'b>(a: &'a str, b: &'b str) -> (&'a str, &'b str) {
+                (a, b)
+            }
+
+            // 'static lifetime : whole program
+        }
+        // Summary
+        use std::fmt::Display;
+        fn longest_with_as_announcement<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
+            where T: Display
+            {
+                println!("Announcement! {}", ann);
+                if x.len() > y.len() {
+                    x
+                } else {
+                    y
+                }
+            }
+    }
+    // ------------------------------
+    // Tests
+    {
+        // See `test` crate.
     }
     // ------------------------------
 }
