@@ -675,6 +675,26 @@ fn main() {
         // See `test` crate.
     }
     // ------------------------------
+    // Functional programming
+    {
+        // ------------------------------
+        // Closures
+        {
+            use std::thread;
+            use std::time::Duration;
+            // No types need to be specified but they can only be infered once
+            // (if we call this closure with a u64,
+            //  we won't be able to call it with String as well)
+            let expensive_closure = |num| {
+                println!("calculating slowly...");
+                thread::sleep(Duration::from_secs(2));
+                num
+            };
+
+            println!("{}", expensive_closure(4));
+        }
+    }
+    // ------------------------------
 }
 
 // ------------------------------
