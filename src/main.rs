@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
+#![allow(unused_imports)]
 
 fn main() {
     // ------------------------------
@@ -412,6 +413,16 @@ fn main() {
             for word in text.split_whitespace() {
                 // Very useful to modify the value !
                 //  (with getting shouted at by the borrow checker)
+                {
+                    let count = match map.entry(word) {
+                        std::collections::hash_map::Entry::Occupied(c) => c.into_mut(),
+                        std::collections::hash_map::Entry::Vacant(case) => {
+                            // Some heavy computation happening only once
+                            case.insert(0)
+                        }
+                    };
+                }
+                // or simpler :
                 let count = map.entry(word).or_insert(0);
                 *count += 1;
             }
@@ -687,63 +698,176 @@ fn main() {
             //  we won't be able to call it with String as well)
             let expensive_closure = |num| {
                 println!("calculating slowly...");
-                thread::sleep(Duration::from_secs(2));
+                // thread::sleep(Duration::from_secs(2));
                 num
             };
 
-            println!("{}", expensive_closure(4));
+            // println!("{}", expensive_closure(4));
+
+            use std::collections::HashMap;
+            use std::collections::hash_map::Entry;
+            use std::hash::Hash;
+
+            struct Cacher<T, U>
+                where T: Fn(U) -> U,
+                      U: Copy + Eq + Hash
+                      {
+                          calculation: T,
+                          values: HashMap<U, U> // Option<U>,
+                      }
+
+            impl<T, U> Cacher<T, U>
+                where T: Fn(U) -> U,
+                      U: Copy + Eq + Hash
+                      {
+                          fn new(closure: T) -> Cacher<T, U> {
+                              Cacher {
+                                  calculation: closure,
+                                  values: HashMap::new()
+                              }
+                          }
+
+                          fn value(&mut self, arg: U) -> U {
+                              match self.values.entry(arg) {
+                                  Entry::Occupied(v) => v.get().clone(),
+                                  Entry::Vacant(value) => {
+                                      let v = (self.calculation)(arg);
+                                      value.insert(v);
+                                      v
+                                  }
+                              }
+                              // match self.values.get(&arg) {
+                              //     Some(v) => v.clone(),
+                              //     None => {
+                              //         let v = (self.calculation)(arg);
+                              //         self.values.insert(arg, v);
+                              //         v
+                              //     },
+                              // }
+                          }
+                      }
+
+            let mut ec = Cacher::new(expensive_closure);
+            println!("{}", ec.value(3));
+            println!("{}", ec.value(3));
+            println!("{}", ec.value(4));
+            println!("{}", ec.value(3));
+
+            {
+                let capturer = |num| ec.value(num);
+            }
+            // traits :
+            // FnOnce : take ownership of the outside variables it uses
+            // FnMut : mutable ref of the ouside vars it uses
+            // Fn : immutable ref of ...
+            {
+                let capturer_that_moves_ec = move |num| ec.value(num);
+            }
+        }
+        // ------------------------------
+        // Iterators
+        {
+            // Iterators are lazy !
+            let v1 = vec![1, 2, 3];
+            let v1_iter = v1.iter();
+
+            for val in v1_iter {
+                println!("Got {}", val);
+            }
+
+            v1.iter().for_each(|val| println!("Got {}", val));
+            let sum: i32 = v1.iter().sum();
+            println!("Sum : {}", sum);
+
+            // iterators are lazy so are useless unless consumed :
+            // without the collect, nothing is computed.
+            let vec_add: Vec<i32> = v1.iter().map(|x| x + 1).collect();
+
+            // Implementing Iterator trait
+            struct Counter {
+                count: u32
+            }
+
+            impl Counter {
+                fn new() -> Counter {
+                    Counter { count: 0 }
+                }
+            }
+
+            impl Iterator for Counter {
+                type Item = u32;
+                fn next(&mut self) -> Option<u32> {
+                    if self.count < 5 {
+                        self.count += 1;
+                        Some(self.count)
+                    } else {
+                        None
+                    }
+                }
+            }
+
+            for c in Counter::new() {
+                println!("Counter : {}", c);
+            }
+
+            let sum: u32 = Counter::new().zip(Counter::new().skip(1))
+                .map(|(a, b)| a * b)
+                .filter(|x| x % 3 == 0)
+                .sum();
+
+            println!("Sum : {}", sum);
+        }
+        // ------------------------------
+    }
+}
+
+    // ------------------------------
+
+    fn fibo_imperative(n: u32) -> u32 {
+        let mut res = 1;
+        let mut prev = 0;
+
+        if n == 0 { return 0; }
+
+        for _ in 1..n {
+            res += prev;
+            prev = res - prev;
+        }
+
+        res
+    }
+
+    fn fibo_functional(n: u32) -> u32 {
+        fn fibo_f_body(n0: u32, n1: u32, n: u32) -> u32 {
+            if n == 0 { return n0; }
+            fibo_f_body(n1, n0+n1, n-1)
+        }
+        fibo_f_body(0, 1, n)
+    }
+
+    fn fibo_test() {
+        for i in 0..10 {
+            println!("i : {}, f : {}", fibo_imperative(i), fibo_functional(i));
         }
     }
-    // ------------------------------
-}
 
-// ------------------------------
+    fn facto_i(n: u32) -> u32 {
+        let mut res = 1;
 
-fn fibo_imperative(n: u32) -> u32 {
-    let mut res = 1;
-    let mut prev = 0;
+        for n in 1..n+1 {
+            res *= n;
+        }
 
-    if n == 0 { return 0; }
-
-    for _ in 1..n {
-        res += prev;
-        prev = res - prev;
+        res
     }
 
-    res
-}
-
-fn fibo_functional(n: u32) -> u32 {
-    fn fibo_f_body(n0: u32, n1: u32, n: u32) -> u32 {
-        if n == 0 { return n0; }
-        fibo_f_body(n1, n0+n1, n-1)
-    }
-    fibo_f_body(0, 1, n)
-}
-
-fn fibo_test() {
-    for i in 0..10 {
-        println!("i : {}, f : {}", fibo_imperative(i), fibo_functional(i));
-    }
-}
-
-fn facto_i(n: u32) -> u32 {
-    let mut res = 1;
-
-    for n in 1..n+1 {
-        res *= n;
+    fn facto_f(n: u32) -> u32 {
+        if n == 0 { return 1; }
+        n * facto_f(n-1)
     }
 
-    res
-}
-
-fn facto_f(n: u32) -> u32 {
-    if n == 0 { return 1; }
-    n * facto_f(n-1)
-}
-
-fn facto_test() {
-    for i in 0..10 {
-        println!("i : {}, f : {}", facto_i(i), facto_f(i));
+    fn facto_test() {
+        for i in 0..10 {
+            println!("i : {}, f : {}", facto_i(i), facto_f(i));
+        }
     }
-}
