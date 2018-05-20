@@ -1,5 +1,5 @@
-extern crate cargo_recap;
+extern crate rust_recap;
 
 fn main() {
-    cargo_recap::run();
+    rust_recap::run();
 }

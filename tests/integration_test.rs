@@ -1,4 +1,4 @@
-extern crate cargo_recap;
+extern crate rust_recap;
 
 mod common;
 
@@ -6,5 +6,5 @@ mod common;
 fn it_adds_two() {
     let nb = common::setup();
     assert_eq!(nb, 72);
-    assert_eq!(cargo_recap::tests::add_two(3), 5);
+    assert_eq!(rust_recap::tests::add_two(3), 5);
 }
