@@ -12,6 +12,7 @@ mod generics_traits_lifetimes;
 pub mod tests;
 mod functional;
 
+mod template;
 mod divers;
 
 pub fn run() {
@@ -63,8 +64,13 @@ pub fn run() {
         // `$ cargo test`
     }
     // ------------------------------
-    // Functional programming : Closures, Iterators, 
+    // Functional programming : Closures, Iterators
     {
         functional::run();
+    }
+    // ------------------------------
+    // Template
+    {
+        template::run();
     }
 } 
