@@ -1,6 +1,14 @@
 [package]
 name = "rust_recap"
+description = "Recap code for Rust"
 version = "0.1.0"
 authors = ["GONI Guillaume <gdn3@live.fr>"]
+license = "MIT OR Apache-2.0"
+
+# default profiles :
+[profile.dev]
+opt-level = 0
+[profile.release]
+opt-level = 3
 
 [dependencies]
