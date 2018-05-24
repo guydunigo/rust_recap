@@ -257,7 +257,7 @@ pub fn run() {
         println!("c after = {:?}", c);
     }
     // ------------------------------
-    // Ref Cycle
+    // Ref Cycle : the Rc strong_count never goes to 0 by itself so the memory is lost.
     {
         use std::rc::Rc;
         use std::cell::RefCell;
@@ -279,6 +279,7 @@ pub fn run() {
 
         let a = Rc::new(List::Cons(5, RefCell::new(Rc::new(List::Nil))));
 
+        // Rc::strong_count(myrc) : gives the number of references to the data
         println!("a initial rc count = {}", Rc::strong_count(&a));
         println!("a next item = {:?}", a.tail());
 
@@ -295,8 +296,48 @@ pub fn run() {
         println!("b rc count after changing a = {}", Rc::strong_count(&b));
         println!("a rc count after changing a = {}", Rc::strong_count(&a));
 
-        // overflow warning : we have a loop :
+        // overflow warning, we have a loop :
         // println!("a next item = {:?}", a.tail());
+    }
+    // ------------------------------
+    // Weak pointers :
+    // obtained from Rc::downgrade(myrc), raise the weak_count instead of the strong_count
+    // weak_count doesn't need to be zero for the data to be dropped
+    // To check if it has been dropped and use it, call the method `upgrade` to get a Option<Rc<T>>
+    {
+        use std::rc::{Rc,Weak};
+        use std::cell::RefCell;
+
+        #[derive(Debug)]
+        struct Node {
+            value: i32,
+            children: RefCell<Vec<Rc<Node>>>,
+            parent: RefCell<Weak<Node>>,
+        }
+
+        let leaf = Rc::new(Node {
+            value: 3,
+            children: RefCell::new(vec![]),
+            parent: RefCell::new(Weak::new()),
+        });
+
+        let branch = Rc::new(Node {
+            value: 5,
+            children: RefCell::new(vec![Rc::clone(&leaf)]),
+            parent: RefCell::new(Weak::new()),
+        });
+
+        *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+
+        println!("Leaf's value : {}", leaf.value);
+        println!("Branch's value : {}", branch.value);
+        branch.children.borrow().iter().for_each(|l| println!("Branch's child's value : {}", l.value));
+
+        let pp = leaf.parent.borrow().upgrade();
+        if let Some(parent) = pp {
+            println!("Leaf's parent's value : {}", parent.value);
+        }
+        // no memory leak due to data cycling thanks to the Weak<T>
     }
 }
 
