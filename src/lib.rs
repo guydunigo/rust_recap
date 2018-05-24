@@ -17,6 +17,7 @@ mod generics_traits_lifetimes;
 pub mod tests;
 mod functional;
 mod smart_pointers;
+mod concurrency;
 
 mod template;
 mod divers;
@@ -94,7 +95,12 @@ pub fn run() {
     // ------------------------------
     // Smart pointers : heap (Box<T>), Deref, Drop, Reference counters, ...
     {
-        smart_pointers::run();
+        // smart_pointers::run();
+    }
+    // ------------------------------
+    // Fearless concurrency
+    {
+        concurrency::run();
     }
     // ------------------------------
     // Template
