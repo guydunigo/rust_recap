@@ -35,21 +35,48 @@ pub fn run() {
     // Channels (pipes)
     {
         use std::thread;
+        use std::time::Duration;
+        // Multiple producer, single consumer
         use std::sync::mpsc;
 
         let (tx, rx) = mpsc::channel();
+        let tx_2 = mpsc::Sender::clone(&tx);
 
         let handle = thread::spawn(move || {
             let val = String::from("hi");
             tx.send(val).unwrap();
+
+            for i in 0..5 {
+                thread::sleep(Duration::from_millis(15));
+                tx.send(i.to_string()).unwrap();
+            }
+        });
+
+        let handle_2 = thread::spawn(move || {
+            for i in 10..15 {
+                thread::sleep(Duration::from_millis(15));
+                tx_2.send(i.to_string()).unwrap();
+            }
         });
 
         // Block the thread :
         println!("Got : {}", rx.recv().unwrap());
-        // Doesn't :
-        // println!("{}", rx.try_recv().unwrap());
+
+        loop {
+            thread::sleep(Duration::from_millis(10));
+            // Doesn't block :
+            match rx.try_recv() {
+                Ok(value) => println!("Got : {}", value),
+                Err(mpsc::TryRecvError::Empty) => println!("Nothing yet."),
+                Err(mpsc::TryRecvError::Disconnected) => {
+                    println!("Channel disconnected, exiting...");
+                    break;
+                }
+            }
+        }
 
         handle.join().unwrap();
+        handle_2.join().unwrap();
     }
     // ------------------------------
     // Template
