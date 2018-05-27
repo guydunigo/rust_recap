@@ -98,7 +98,7 @@ pub fn run() {
         // smart_pointers::run();
     }
     // ------------------------------
-    // Fearless concurrency
+    // Fearless concurrency : threads, channels (pipes)
     {
         concurrency::run();
     }
