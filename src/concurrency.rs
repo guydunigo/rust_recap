@@ -112,6 +112,15 @@ pub fn run() {
         println!("Result: {}", *counter.lock().unwrap());
     }
     // ------------------------------
+    // Sync and Send traits
+    {
+        // Send : Can be passed from a thread to another safely.
+        // Sync : Safe to reference from multiple threads.
+        // A type composed entirely of Send is a Send automatically.
+        // A type composed entirely of Sync is a Sync automatically.
+        // unsafe so c.f. later and rustonomicon
+    }
+    // ------------------------------
     // Template
     {
     }
