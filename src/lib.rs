@@ -18,6 +18,7 @@ pub mod tests;
 mod functional;
 mod smart_pointers;
 mod concurrency;
+mod oop;
 
 mod template;
 mod divers;
@@ -100,7 +101,12 @@ pub fn run() {
     // ------------------------------
     // Fearless concurrency : threads, channels (pipes), mutexes, some traits
     {
-        concurrency::run();
+        // concurrency::run();
+    }
+    // ------------------------------
+    // OOP and rust
+    {
+        oop::run();
     }
     // ------------------------------
     // Template
