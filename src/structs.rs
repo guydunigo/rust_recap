@@ -63,3 +63,69 @@ pub fn run() {
     println!("R(3,2) area : {}", r.area());
     println!("R(1,2) in R(3,2) ? {}", r.can_hold(&r2));
 }
+
+// ------------------------------
+// Example
+
+enum PostState {
+    Draft,
+    Reviewing,
+    Approved,
+}
+
+struct Post {
+    content: String,
+    state: PostState,
+}
+
+impl Post {
+    fn new() -> Post {
+        Post {
+            content: String::new(),
+            state: PostState::Draft,
+        }
+    }
+    fn add_text(&mut self, text: &str) {
+        match self.state {
+            PostState::Draft => self.content.push_str(text),
+            _ => (),
+        };
+    }
+    fn content(&self) -> &str {
+        match self.state {
+            PostState::Approved => &self.content,
+            // PostState::Draft|PostState::Reviewing => "",
+            _ => "",
+        }
+    }
+    fn request_review(&mut self) {
+        if let PostState::Draft = self.state {
+            self.state = PostState::Reviewing;
+        }
+    }
+    fn approve(&mut self) {
+        if let PostState::Reviewing = self.state {
+            self.state = PostState::Approved;
+        }
+    }
+}
+
+#[test]
+fn example_structs() {
+    let mut post = Post::new();
+    let sentence = "I ate a salad for lunch today";
+
+    post.add_text(sentence);
+    assert_eq!("", post.content());
+
+    post.request_review();
+    assert_eq!("", post.content());
+
+    post.add_text(sentence);
+
+    post.approve();
+    assert_eq!(sentence, post.content());
+
+    post.add_text(sentence);
+    assert_eq!(sentence, post.content());
+}
