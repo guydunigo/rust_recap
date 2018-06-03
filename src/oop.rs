@@ -145,3 +145,70 @@ fn example_oop() {
     post.add_text(sentence);
     assert_eq!(sentence, post.content());
 }
+
+// New implementation that causes compile time error if we call the functions when we are not
+// supposed to.
+
+struct Post2 {
+    content: String,
+}
+
+struct Draft2 {
+    content: String,
+}
+
+impl Post2 {
+    fn new() -> Draft2 {
+        Draft2 {
+            content: String::new(),
+        }
+    }
+
+    fn content(&self) -> &str {
+        &self.content
+    }
+}
+
+impl Draft2 {
+    fn add_text(&mut self, text: &str) {
+        self.content.push_str(text);
+    }
+
+    fn request_review(self) -> Reviewing2 {
+        Reviewing2 {
+            content: self.content,
+        }
+    }
+}
+
+struct Reviewing2 {
+    content: String,
+}
+
+impl Reviewing2 {
+    fn approve(self) -> Post2 {
+        Post2 {
+            content: self.content,
+        }
+    }
+}
+
+#[test]
+fn example_oop_2() {
+    let mut post = Post2::new();
+    let sentence = "I ate a salad for lunch today";
+
+    post.add_text(sentence);
+    // assert_eq!("", post.content());
+
+    let post = post.request_review();
+    // assert_eq!("", post.content());
+
+    // post.add_text(sentence);
+
+    let post = post.approve();
+    // assert_eq!(sentence, post.content());
+
+    // post.add_text(sentence);
+    assert_eq!(sentence, post.content());
+}
