@@ -19,6 +19,7 @@ mod functional;
 mod smart_pointers;
 mod concurrency;
 mod oop;
+mod pattern_matching;
 
 mod template;
 mod divers;
@@ -106,7 +107,12 @@ pub fn run() {
     // ------------------------------
     // OOP and rust
     {
-        oop::run();
+        // oop::run();
+    }
+    // ------------------------------
+    // Pattern matching
+    {
+        pattern_matching::run();
     }
     // ------------------------------
     // Template
