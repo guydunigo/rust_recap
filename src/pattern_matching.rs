@@ -154,4 +154,61 @@ pub fn run() {
             },
         }
     }
+    // ------------------------------
+    // ref and ref mut
+    {
+        let mut robot_name = Some(String::from("Bors"));
+        match robot_name {
+            Some(ref name) => println!("Found a name {}", name),
+            None => (),
+        }
+        println!("robot_name is: {:?}", robot_name);
+
+        match robot_name {
+            Some(ref mut name) => *name = String::from("Another name"),
+            None => (),
+        }
+        println!("robot_name is: {:?}", robot_name);
+    }
+    // ------------------------------
+    // Match guards
+    {
+        let nul = Some(5);
+        match nul {
+            Some(x) if x < 7 => println!("Less than five {}", x),
+            Some(x) => println!("Whatever..."),
+            None => (),
+        }
+
+        let x = Some(5);
+        let y = 10;
+        match x {
+            Some(50) => println!("Got 50"),
+            Some(1) | Some(4) if y >= 35 => println!("aoue"),
+            Some(n) if n == y => println!("Matched, n = {:?}", n),
+            _ => println!("Default case, x = {:?}", x),
+        }
+        println!("at the end: x = {:?}, y = {:?}", x, y);
+    }
+    // ------------------------------
+    // @ : to have condition and place into a variable
+    {
+        enum Message {
+            Hello { id: i32 },
+        }
+
+        let msg = Message::Hello { id: 5 };
+
+        match msg {
+            Message::Hello { id: id_variable @ 3...7 } => {
+                println!("Found an id in range: {}", id_variable)
+            },
+            Message::Hello { id: 10...12 } => {
+                println!("Found an id in another range")
+            },
+            Message::Hello { id } => {
+                println!("Found some other id: {}", id)
+            },
+        }
+    }
 }
