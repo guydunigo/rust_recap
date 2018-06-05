@@ -46,6 +46,7 @@ pub fn run() {
     match c {
         'a' ... 'j' => println!("early letter"),
         'k' ... 'z' => println!("late letter"),
+        _ => println!("something else"),
     }
 
     let y = Some(46);
