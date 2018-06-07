@@ -20,6 +20,7 @@ mod smart_pointers;
 mod concurrency;
 mod oop;
 mod pattern_matching;
+mod unsafe_rust;
 
 mod template;
 mod divers;
@@ -112,7 +113,12 @@ pub fn run() {
     // ------------------------------
     // Pattern matching
     {
-        pattern_matching::run();
+        // pattern_matching::run();
+    }
+    // ------------------------------
+    // Unsafe : four places where `unsafe` is needed
+    {
+        unsafe_rust::run();
     }
     // ------------------------------
     // Template
