@@ -32,6 +32,8 @@ pub fn run() {
     // ------------------------------
     // Creating a safe abstraction over unsafe code
     {
+        use std::slice;
+
         fn split_at_mut(slice: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
             let len = slice.len();
             let ptr = slice.as_mut_ptr();
@@ -52,7 +54,14 @@ pub fn run() {
         assert_eq!(b, &mut [4, 5, 6]);
     }
     // ------------------------------
-    // Calling an unsafe function or method
+    // Extern and call external code
     {
+        extern "C" {
+            fn abs(input: i32) -> i32;
+        }
+
+        unsafe {
+            println!("Absolute value of -3 according to C: {}", abs(-3));
+        }
     }
 }
