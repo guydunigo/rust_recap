@@ -63,5 +63,17 @@ pub fn run() {
         unsafe {
             println!("Absolute value of -3 according to C: {}", abs(-3));
         }
+
+        // no_mangle prevents the compiler to modify names
+        #[no_mangle]
+        pub extern "C" fn call_from_c() {
+            println!("Just called a Rust function from C!");
+        }
+    }
+    // ------------------------------
+    // Mutable static variable
+    {
+        static HELLO_WORLD: &str = "Hello, world!";
+        println!("name is: {}", HELLO_WORLD);
     }
 }
