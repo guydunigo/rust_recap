@@ -75,5 +75,19 @@ pub fn run() {
     {
         static HELLO_WORLD: &str = "Hello, world!";
         println!("name is: {}", HELLO_WORLD);
+
+        static mut COUNTER: i32 = 0;
+        unsafe {
+            COUNTER += 1;
+        }
+    }
+    // ------------------------------
+    // Implementing an unsafe trait
+    {
+        unsafe trait Foo {
+        }
+
+        unsafe impl Foo for i32 {
+        }
     }
 }
