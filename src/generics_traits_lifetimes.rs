@@ -155,11 +155,51 @@ pub fn run() {
         }
 
         // 'static lifetime : whole program
+
+        // ------------------------------
+        // Lifetime subtyping ensures one lifetime outlives another
+        {
+            struct Context<'s>(&'s str);
+
+            // 's is at least as long as 'c
+            struct Parser<'c, 's: 'c> {
+                context: &'c Context<'s>,
+            }
+
+            impl<'c, 's> Parser<'c, 's> {
+                fn parse(&self) -> Result<(), &'s str> {
+                    Err(&self.context.0[1..])
+                }
+            }
+
+            fn parse_context<'s>(context: Context<'s>) -> Result<(), &'s str> {
+                Parser { context: &context }.parse()
+            }
+        }
+        // ------------------------------
+        // Lifetime bounds on references to feneric type
+        {
+           struct Ref<'a, T>(&'a T) where T: 'a;
+        }
+        // ------------------------------
+        // Inference of trait object lifetimes
+        {
+            trait Red {}
+
+            struct Ball<'a> {
+                diameter: &'a i32,
+            }
+
+            impl<'a> Red for Ball<'a> {}
+
+            let num = 5;
+            let obj = Box::new(Ball { diameter: &num }) as Box<Red>;
+        }
     }
     // ------------------------------
     // Summary
     use std::fmt::Display;
-    fn longest_with_as_announcement<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
+    fn longest_with_an_announcement<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
     where
         T: Display,
     {

@@ -65,7 +65,7 @@ pub fn run() {
     // ------------------------------
     // Generics, Traits, Lifetimes
     {
-        // generics_traits_lifetimes::run();
+        generics_traits_lifetimes::run();
     }
     // ------------------------------
     // Tests
@@ -118,7 +118,7 @@ pub fn run() {
     // ------------------------------
     // Unsafe : four places where `unsafe` is needed
     {
-        unsafe_rust::run();
+        // unsafe_rust::run();
     }
     // ------------------------------
     // Template
