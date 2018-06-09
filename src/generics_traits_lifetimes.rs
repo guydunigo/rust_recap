@@ -61,10 +61,10 @@ pub fn run() {
         }
 
         let nov = Novel {
-                text: String::from(
-                          "This is a great story with very interesting characters. They go through some long and weary adventure wich make them hate each other at first, but they eventually get back together and end even closer than they began. The end !"
-                          )
-            };
+            text: String::from(
+                      "This is a great story with very interesting characters. They go through some long and weary adventure wich make them hate each other at first, but they eventually get back together and end even closer than they began. The end !"
+                      )
+        };
         get_summary(&nov);
         println!("{}", nov.default());
 
@@ -90,12 +90,12 @@ pub fn run() {
             3
         }
         fn some_function_2<T, U>(t: T, u: U) -> i32
-        where
-            T: Testable<u32> + Clone,
-            U: Clone + Summarizable,
-        {
-            3
-        }
+            where
+                T: Testable<u32> + Clone,
+                U: Clone + Summarizable,
+                {
+                    3
+                }
 
         // Defining methods only for certain traits
         use std::fmt::Display;
@@ -124,6 +124,114 @@ pub fn run() {
         // Blanket implementations
         // Implements the ToString trait for all types implementing Display :
         // impl<T: Display> ToString for T {}
+
+        // ------------------------------
+        // Advanced traits
+        {
+            // Associated types : store types it traits to use them
+            pub trait Iterator {
+                type Item;
+                fn next(&mut self) -> Option<Self::Item>;
+            }
+
+            // Default value for generic type
+            {
+                trait Add<RHS=Self> {
+                    type Output;
+                    fn add(self, rhs: RHS) -> Self::Output;
+                }
+            }
+            // Overload operator
+            use std::ops::Add;
+            #[derive(Debug, PartialEq)]
+            struct Point {
+                x: i32,
+                y: i32,
+            }
+            impl Add for Point {
+                type Output = Point;
+
+                fn add(self, other: Point) -> Point {
+                    Point {
+                        x: self.x + other.x,
+                        y: self.y + other.y,
+                    }
+                }
+            }
+            assert_eq!(Point { x: 1, y: 0 } + Point { x: 2, y: 3 }, Point { x: 3, y: 3 });
+
+            // Implementing multiple traits with the same method
+            trait Pilot {
+                fn name() -> String;
+                fn fly(&self);
+            }
+            trait Wizard {
+                fn fly(&self);
+            }
+            struct Human;
+            impl Pilot for Human {
+                fn name() -> String {
+                    String::from("Latecoere")
+                }
+                fn fly(&self) {
+                    println!("This is your captain speaking.");
+                }
+            }
+            impl Wizard for Human {
+                fn fly(&self) {
+                    println!("Up!");
+                }
+            }
+            impl Human {
+                fn name() -> String {
+                    String::from("Dupont")
+                }
+                fn fly(&self) {
+                    println!("*waving arms furiously*");
+                }
+            }
+            let bob = Human;
+            bob.fly();
+            (&bob as &Wizard).fly();
+            Wizard::fly(&bob);
+            Pilot::fly(&bob);
+            println!("{} {}",
+                     Human::name(),
+                     <Human as Pilot>::name(),
+                     );
+
+            // Supertraits
+            use std::fmt;
+            trait OutlinePrint: fmt::Display {
+                fn outline_print(&self) {
+                    let output = self.to_string();
+                    let len = output.len();
+                    println!("{}", "*".repeat(len + 4));
+                    println!("*{}*", " ".repeat(len + 2));
+                    println!("* {} *", output);
+                    println!("*{}*", " ".repeat(len + 2));
+                    println!("{}", "*".repeat(len + 4));
+                }
+            }
+            impl fmt::Display for Point {
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    write!(f, "({}, {})", self.x, self.y)
+                }
+            }
+            impl OutlinePrint for Point {}
+            let pt = Point { x: 46, y: 164642 };
+            pt.outline_print();
+
+            // Implementing traits on external types
+            struct Wrapper(Vec<String>);
+            impl fmt::Display for Wrapper {
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    write!(f, "[{}]", self.0.join(", "))
+                }
+            }
+            let w = Wrapper(vec![String::from("hello"), String::from("world")]);
+            println!("w = {}", w);
+        }
     }
     // ------------------------------
     // Lifetimes :
@@ -179,7 +287,7 @@ pub fn run() {
         // ------------------------------
         // Lifetime bounds on references to feneric type
         {
-           struct Ref<'a, T>(&'a T) where T: 'a;
+            struct Ref<'a, T>(&'a T) where T: 'a;
         }
         // ------------------------------
         // Inference of trait object lifetimes
@@ -200,14 +308,14 @@ pub fn run() {
     // Summary
     use std::fmt::Display;
     fn longest_with_an_announcement<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
-    where
-        T: Display,
-    {
-        println!("Announcement! {}", ann);
-        if x.len() > y.len() {
-            x
-        } else {
-            y
+        where
+            T: Display,
+        {
+            println!("Announcement! {}", ann);
+            if x.len() > y.len() {
+                x
+            } else {
+                y
+            }
         }
-    }
 }
