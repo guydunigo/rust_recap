@@ -6,6 +6,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 #![allow(unused_imports)]
+#![allow(private_no_mangle_fns)]
 
 mod basics;
 mod ownership;
@@ -21,6 +22,7 @@ mod concurrency;
 mod oop;
 mod pattern_matching;
 mod unsafe_rust;
+mod advanced_types;
 
 mod template;
 mod divers;
@@ -65,7 +67,7 @@ pub fn run() {
     // ------------------------------
     // Generics, Traits, Lifetimes
     {
-        generics_traits_lifetimes::run();
+        // generics_traits_lifetimes::run();
     }
     // ------------------------------
     // Tests
@@ -119,6 +121,11 @@ pub fn run() {
     // Unsafe : four places where `unsafe` is needed
     {
         // unsafe_rust::run();
+    }
+    // ------------------------------
+    // Advanced types
+    {
+        advanced_types::run();
     }
     // ------------------------------
     // Template
