@@ -4,79 +4,79 @@ pub fn run() {
     // ------------------------------
     // Closures
     {
-            use std::thread;
-            use std::time::Duration;
-            // No types need to be specified but they can only be infered once
-            // (if we call this closure with a u64,
-            //  we won't be able to call it with String as well)
-            let expensive_closure = |num| {
-                println!("calculating slowly...");
-                // thread::sleep(Duration::from_secs(2));
-                num
-            };
+        use std::thread;
+        use std::time::Duration;
+        // No types need to be specified but they can only be infered once
+        // (if we call this closure with a u64,
+        //  we won't be able to call it with String as well)
+        let expensive_closure = |num| {
+            println!("calculating slowly...");
+            // thread::sleep(Duration::from_secs(2));
+            num
+        };
 
-            // println!("{}", expensive_closure(4));
+        // println!("{}", expensive_closure(4));
 
-            use std::collections::HashMap;
-            use std::collections::hash_map::Entry;
-            use std::hash::Hash;
+        use std::collections::HashMap;
+        use std::collections::hash_map::Entry;
+        use std::hash::Hash;
 
-            struct Cacher<T, U>
-                where T: Fn(U) -> U,
-                      U: Copy + Eq + Hash
-                      {
-                          calculation: T,
-                          values: HashMap<U, U> // Option<U>,
-                      }
+        struct Cacher<T, U>
+            where T: Fn(U) -> U,
+                  U: Copy + Eq + Hash
+                  {
+                      calculation: T,
+                      values: HashMap<U, U> // Option<U>,
+                  }
 
-            impl<T, U> Cacher<T, U>
-                where T: Fn(U) -> U,
-                      U: Copy + Eq + Hash
-                      {
-                          fn new(closure: T) -> Cacher<T, U> {
-                              Cacher {
-                                  calculation: closure,
-                                  values: HashMap::new()
-                              }
-                          }
-
-                          fn value(&mut self, arg: U) -> U {
-                              match self.values.entry(arg) {
-                                  Entry::Occupied(v) => v.get().clone(),
-                                  Entry::Vacant(value) => {
-                                      let v = (self.calculation)(arg);
-                                      value.insert(v);
-                                      v
-                                  }
-                              }
-                              // match self.values.get(&arg) {
-                              //     Some(v) => v.clone(),
-                              //     None => {
-                              //         let v = (self.calculation)(arg);
-                              //         self.values.insert(arg, v);
-                              //         v
-                              //     },
-                              // }
+        impl<T, U> Cacher<T, U>
+            where T: Fn(U) -> U,
+                  U: Copy + Eq + Hash
+                  {
+                      fn new(closure: T) -> Cacher<T, U> {
+                          Cacher {
+                              calculation: closure,
+                              values: HashMap::new()
                           }
                       }
 
-            let mut ec = Cacher::new(expensive_closure);
-            println!("{}", ec.value(3));
-            println!("{}", ec.value(3));
-            println!("{}", ec.value(4));
-            println!("{}", ec.value(3));
+                      fn value(&mut self, arg: U) -> U {
+                          match self.values.entry(arg) {
+                              Entry::Occupied(v) => v.get().clone(),
+                              Entry::Vacant(value) => {
+                                  let v = (self.calculation)(arg);
+                                  value.insert(v);
+                                  v
+                              }
+                          }
+                          // match self.values.get(&arg) {
+                          //     Some(v) => v.clone(),
+                          //     None => {
+                          //         let v = (self.calculation)(arg);
+                          //         self.values.insert(arg, v);
+                          //         v
+                          //     },
+                          // }
+                      }
+                  }
 
-            {
-                let capturer = |num| ec.value(num);
-            }
-            // traits :
-            // FnOnce : take ownership of the outside variables it uses
-            // FnMut : mutable ref of the ouside vars it uses
-            // Fn : immutable ref of ...
-            {
-                let capturer_that_moves_ec = move |num| ec.value(num);
-            }
+        let mut ec = Cacher::new(expensive_closure);
+        println!("{}", ec.value(3));
+        println!("{}", ec.value(3));
+        println!("{}", ec.value(4));
+        println!("{}", ec.value(3));
+
+        {
+            let capturer = |num| ec.value(num);
         }
+        // traits :
+        // FnOnce : take ownership of the outside variables it uses
+        // FnMut : mutable ref of the ouside vars it uses
+        // Fn : immutable ref of ...
+        {
+            let capturer_that_moves_ec = move |num| ec.value(num);
+        }
+    }
     // ------------------------------
     // Iterators
     {
@@ -134,5 +134,22 @@ pub fn run() {
     // ------------------------------
     // Advanced
     {
+        // Function pointers
+        // Implements Fn, FnMut and FnOnce so can be used when a closure is needed.
+        // Can be used when working we C's function pointers.
+
+        fn add_one(x: i32) -> i32 {
+            x + 1
+        }
+        fn do_twice(f: fn(i32) -> i32, arg: i32) -> i32 {
+            f(arg) + f(arg)
+        }
+        println!("{}", do_twice(add_one, 24));
+
+        // Returning closures
+        fn return_closure(x: i32) -> Box<Fn(i32) -> i32> {
+            Box::new(move |y| y + x)
+        }
+        println!("{}", return_closure(42)(10));
     }
 }

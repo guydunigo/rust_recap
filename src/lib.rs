@@ -37,37 +37,37 @@ pub fn run() {
         // Functions, expressions (without ';', return a value), statements
         // Control flow
 
-        // basics::run();
+        basics::run();
     }
     // ------------------------------
     // Ownership, moving, borrowing, slices
     {
-        // ownership::run();
+        ownership::run();
     }
     // ------------------------------
     // Structs
     {
-        // structs::run();
+        structs::run();
     }
     // ------------------------------
     // Enums
     {
-        // enums::run();
+        enums::run();
     }
     // ------------------------------
     // Collections : Vectors, Strings (stored in UTF-8), HashMaps
     {
-        // collections::run();
+        collections::run();
     }
     // ------------------------------
     // Errors
     {
-        // errors::run();
+        errors::run();
     }
     // ------------------------------
     // Generics, Traits, Lifetimes
     {
-        // generics_traits_lifetimes::run();
+        generics_traits_lifetimes::run();
     }
     // ------------------------------
     // Tests
@@ -78,7 +78,7 @@ pub fn run() {
     // ------------------------------
     // Functional programming : Closures, Iterators
     {
-        // functional::run();
+        functional::run();
     }
     // ------------------------------
     // Cargo
@@ -100,27 +100,27 @@ pub fn run() {
     // ------------------------------
     // Smart pointers : heap (Box<T>), Deref, Drop, Reference counters, ...
     {
-        // smart_pointers::run();
+        smart_pointers::run();
     }
     // ------------------------------
     // Fearless concurrency : threads, channels (pipes), mutexes, some traits
     {
-        // concurrency::run();
+        concurrency::run();
     }
     // ------------------------------
     // OOP and rust
     {
-        // oop::run();
+        oop::run();
     }
     // ------------------------------
     // Pattern matching
     {
-        // pattern_matching::run();
+        pattern_matching::run();
     }
     // ------------------------------
     // Unsafe : four places where `unsafe` is needed
     {
-        // unsafe_rust::run();
+        unsafe_rust::run();
     }
     // ------------------------------
     // Advanced types
