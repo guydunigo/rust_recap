@@ -86,6 +86,9 @@ pub fn run() {
             println!("the value is: {}", element);
         }
 
+        // Ranges :
+        //   1..4 == 1, 2, 3
+        //   1..=4 == 1, 2, 3, 4
         for element in (1..4).rev() {
             println!("the value is: {}", element);
         }

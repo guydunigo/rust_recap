@@ -143,6 +143,7 @@ pub fn run() {
             }
             // Overload operator
             use std::ops::Add;
+            // Derive will auto-implement the given traits (c.f. the appendix of the book)
             #[derive(Debug, PartialEq)]
             struct Point {
                 x: i32,

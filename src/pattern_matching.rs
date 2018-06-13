@@ -44,7 +44,7 @@ pub fn run() {
             1 => println!("One"),
             // match multiple patterns :
             4 | 6 => println!("Four or six"),
-            // ranges : (4 and 10 included)
+            // ranges : (4 and 10 included) (`..=` can also be used)
             4 ... 10 => println!("Small value"),
             _ => println!("Any"),
         }
