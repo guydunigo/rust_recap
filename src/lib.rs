@@ -23,6 +23,7 @@ mod oop;
 mod pattern_matching;
 mod unsafe_rust;
 mod advanced_types;
+mod macros;
 
 mod template;
 mod divers;
@@ -126,6 +127,11 @@ pub fn run() {
     // Advanced types
     {
         advanced_types::run();
+    }
+    // ------------------------------
+    // Macros
+    {
+        macros::run();
     }
     // ------------------------------
     // Template
