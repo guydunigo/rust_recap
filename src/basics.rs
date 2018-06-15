@@ -81,6 +81,7 @@ pub fn run() {
         }
 
         let a = [10, 20, 30, 40, 50];
+        let b = [42; 92]; // initialize a big table
 
         for element in a.iter() {
             println!("the value is: {}", element);
