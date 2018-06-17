@@ -120,8 +120,4 @@ pub fn run() {
         // A type composed entirely of Sync is a Sync automatically.
         // unsafe so c.f. later and rustonomicon
     }
-    // ------------------------------
-    // Template
-    {
-    }
 }
