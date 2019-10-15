@@ -24,8 +24,8 @@ pub fn run() {
             };
         }
 
-        let a = vec2![3,4];
-        a.iter().map(|x| x*2).for_each(|x| println!("{}", x));
+        let a = vec2![3, 4];
+        a.iter().map(|x| x * 2).for_each(|x| println!("{}", x));
     }
     // ------------------------------
     // Procedural macros for custom `derive`

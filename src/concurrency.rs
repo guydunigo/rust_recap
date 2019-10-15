@@ -81,7 +81,7 @@ pub fn run() {
     // ------------------------------
     // Share memory : Mutexes
     {
-        use std::sync::{Mutex, Arc};
+        use std::sync::{Arc, Mutex};
         use std::thread;
 
         let m = Mutex::new(5);

@@ -14,7 +14,7 @@ pub fn run() {
         if let Some(3) = var {
             println!("this is 3");
         } else if let None = var { // better use .is_none()
-            // ...
+             // ...
         }
 
         let mut stack = vec![1, 422, 5];
