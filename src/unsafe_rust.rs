@@ -11,7 +11,7 @@ pub fn run() {
         let r1 = &num as *const i32;
         let r2 = &mut num as *mut i32;
 
-        let address = 0x012345usize;
+        let address = 0x012_345usize;
         let r = address as *const i32;
 
         unsafe {
@@ -41,8 +41,10 @@ pub fn run() {
             assert!(mid <= len);
 
             unsafe {
-                (slice::from_raw_parts_mut(ptr, mid),
-                slice::from_raw_parts_mut(ptr.offset(mid as isize), len - mid))
+                (
+                    slice::from_raw_parts_mut(ptr, mid),
+                    slice::from_raw_parts_mut(ptr.offset(mid as isize), len - mid),
+                )
             }
         }
 
@@ -84,10 +86,8 @@ pub fn run() {
     // ------------------------------
     // Implementing an unsafe trait
     {
-        unsafe trait Foo {
-        }
+        unsafe trait Foo {}
 
-        unsafe impl Foo for i32 {
-        }
+        unsafe impl Foo for i32 {}
     }
 }

@@ -24,7 +24,7 @@ pub fn run() {
         //         match self.l {
         //             box List::Cons(v, sub) => {
         //                 self.l = sub;
-        //                 Some(v.clone())
+        //                 Some(*v)
         //             },
         //             box List::Nil => None,
         //         }
@@ -46,8 +46,8 @@ pub fn run() {
                 match self.l {
                     List::Cons(v, sub) => {
                         self.l = sub;
-                        Some(v.clone())
-                    },
+                        Some(*v)
+                    }
                     List::Nil => None,
                 }
             }
@@ -63,11 +63,14 @@ pub fn run() {
                 List::Cons(value, Box::new(sub_list))
             }
             pub fn from_vec(values: Vec<i32>) -> List {
-                values.iter().rev().fold(List::Nil, |res, v| List::new(v.clone(), res))
+                values
+                    .iter()
+                    .rev()
+                    .fold(List::Nil, |res, v| List::new(*v, res))
             }
             pub fn value(&self) -> Option<i32> {
                 match self {
-                    List::Cons(v, _) => Some(v.clone()),
+                    List::Cons(v, _) => Some(*v),
                     List::Nil => None,
                 }
             }
@@ -146,11 +149,15 @@ pub fn run() {
         }
 
         {
-            let c = CustomSmartPointer { data: String::from("my stuff") };
+            let c = CustomSmartPointer {
+                data: String::from("my stuff"),
+            };
             println!("CustomSmartPointer created.");
             // then goes out of scope so the drop function is automatically called
         }
-        let c = CustomSmartPointer { data: String::from("my stuff") };
+        let c = CustomSmartPointer {
+            data: String::from("my stuff"),
+        };
         println!("CustomSmartPointer created.");
         // Manually dropped :
         drop(c);
@@ -173,8 +180,8 @@ pub fn run() {
                 match self.l {
                     List::Cons(v, sub) => {
                         self.l = sub;
-                        Some(v.clone())
-                    },
+                        Some(*v)
+                    }
                     List::Nil => None,
                 }
             }
@@ -192,13 +199,14 @@ pub fn run() {
                 List::Cons(value, sub_list)
             }
             pub fn from_vec(values: Vec<i32>) -> List {
-                values.iter()
+                values
+                    .iter()
                     .rev()
-                    .fold(List::Nil, |res, v| List::new(v.clone(), Rc::new(res)))
+                    .fold(List::Nil, |res, v| List::new(*v, Rc::new(res)))
             }
             pub fn value(&self) -> Option<i32> {
                 match self {
-                    List::Cons(v, _) => Some(v.clone()),
+                    List::Cons(v, _) => Some(*v),
                     List::Nil => None,
                 }
             }
@@ -217,11 +225,11 @@ pub fn run() {
         let b = List::new(3, Rc::clone(&a));
         let c = List::new(4, Rc::clone(&a));
         a.iter().for_each(|x| print!("{} ", x));
-        println!("");
+        println!();
         b.iter().for_each(|x| print!("{} ", x));
-        println!("");
+        println!();
         c.iter().for_each(|x| print!("{} ", x));
-        println!("");
+        println!();
     }
     // ------------------------------
     // RefCell : Make unsafe things that are checked at execution rather than at compile time
@@ -240,8 +248,8 @@ pub fn run() {
             Nil,
         }
 
-        use std::rc::Rc;
         use std::cell::RefCell;
+        use std::rc::Rc;
 
         let value = Rc::new(RefCell::new(5));
 
@@ -259,8 +267,8 @@ pub fn run() {
     // ------------------------------
     // Ref Cycle : the Rc strong_count never goes to 0 by itself so the memory is lost.
     {
-        use std::rc::Rc;
         use std::cell::RefCell;
+        use std::rc::Rc;
 
         #[derive(Debug)]
         enum List {
@@ -305,8 +313,8 @@ pub fn run() {
     // weak_count doesn't need to be zero for the data to be dropped
     // To check if it has been dropped and use it, call the method `upgrade` to get a Option<Rc<T>>
     {
-        use std::rc::{Rc,Weak};
         use std::cell::RefCell;
+        use std::rc::{Rc, Weak};
 
         #[derive(Debug)]
         struct Node {
@@ -331,7 +339,11 @@ pub fn run() {
 
         println!("Leaf's value : {}", leaf.value);
         println!("Branch's value : {}", branch.value);
-        branch.children.borrow().iter().for_each(|l| println!("Branch's child's value : {}", l.value));
+        branch
+            .children
+            .borrow()
+            .iter()
+            .for_each(|l| println!("Branch's child's value : {}", l.value));
 
         let pp = leaf.parent.borrow().upgrade();
         if let Some(parent) = pp {
@@ -352,7 +364,9 @@ pub struct LimitTracker<'a, T: 'a + Messenger> {
 }
 
 impl<'a, T> LimitTracker<'a, T>
-where T: Messenger {
+where
+    T: Messenger,
+{
     pub fn new(messenger: &T, max: usize) -> LimitTracker<T> {
         LimitTracker {
             messenger,
@@ -367,9 +381,11 @@ where T: Messenger {
         let percentage_of_max = self.value as f64 / self.max as f64;
 
         if percentage_of_max >= 0.75 && percentage_of_max < 0.9 {
-            self.messenger.send("Warning: You've used up over 75% of your quota!");
+            self.messenger
+                .send("Warning: You've used up over 75% of your quota!");
         } else if percentage_of_max >= 0.9 && percentage_of_max < 1.0 {
-            self.messenger.send("Urgent warning: You've used up over 90% of your quota!");
+            self.messenger
+                .send("Urgent warning: You've used up over 90% of your quota!");
         } else if percentage_of_max >= 1.0 {
             self.messenger.send("Error: You are over your quota!");
         }
@@ -387,7 +403,9 @@ mod tests {
 
     impl MockMessenger {
         fn new() -> MockMessenger {
-            MockMessenger { sent_messages: RefCell::new(vec![]) }
+            MockMessenger {
+                sent_messages: RefCell::new(vec![]),
+            }
         }
     }
 

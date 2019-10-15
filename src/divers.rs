@@ -33,7 +33,7 @@ fn fibo_test() {
 fn facto_i(n: u32) -> u32 {
     let mut res = 1;
 
-    for n in 1..n + 1 {
+    for n in 1..=n {
         res *= n;
     }
 

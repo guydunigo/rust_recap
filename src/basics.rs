@@ -71,13 +71,17 @@ pub fn run() {
             println!(">= 5");
         }
 
+        let mut i = 0;
         loop {
-            break;
+            i += 1;
+            if i > 3 {
+                break;
+            }
         }
 
         let mut i = 0;
         while i != 3 {
-            i = i + 1;
+            i += 1;
         }
 
         let a = [10, 20, 30, 40, 50];

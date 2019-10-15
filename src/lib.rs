@@ -6,27 +6,26 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 #![allow(unused_imports)]
-#![allow(private_no_mangle_fns)]
 
-mod basics;
-mod ownership;
-mod structs;
-mod enums;
-mod collections;
-mod errors;
-mod generics_traits_lifetimes;
-pub mod tests;
-mod functional;
-mod smart_pointers;
-mod concurrency;
-mod oop;
-mod pattern_matching;
-mod unsafe_rust;
 mod advanced_types;
+mod basics;
+mod collections;
+mod concurrency;
+mod enums;
+mod errors;
+mod functional;
+mod generics_traits_lifetimes;
 mod macros;
+mod oop;
+mod ownership;
+mod pattern_matching;
+mod smart_pointers;
+mod structs;
+pub mod tests;
+mod unsafe_rust;
 
-mod template;
 mod divers;
+mod template;
 
 pub fn run() {
     // ------------------------------

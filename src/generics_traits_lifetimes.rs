@@ -90,12 +90,12 @@ pub fn run() {
             3
         }
         fn some_function_2<T, U>(t: T, u: U) -> i32
-            where
-                T: Testable<u32> + Clone,
-                U: Clone + Summarizable,
-                {
-                    3
-                }
+        where
+            T: Testable<u32> + Clone,
+            U: Clone + Summarizable,
+        {
+            3
+        }
 
         // Defining methods only for certain traits
         use std::fmt::Display;
@@ -136,7 +136,7 @@ pub fn run() {
 
             // Default value for generic type
             {
-                trait Add<RHS=Self> {
+                trait Add<RHS = Self> {
                     type Output;
                     fn add(self, rhs: RHS) -> Self::Output;
                 }
@@ -159,7 +159,10 @@ pub fn run() {
                     }
                 }
             }
-            assert_eq!(Point { x: 1, y: 0 } + Point { x: 2, y: 3 }, Point { x: 3, y: 3 });
+            assert_eq!(
+                Point { x: 1, y: 0 } + Point { x: 2, y: 3 },
+                Point { x: 3, y: 3 }
+            );
 
             // Implementing multiple traits with the same method
             trait Pilot {
@@ -193,13 +196,10 @@ pub fn run() {
             }
             let bob = Human;
             bob.fly();
-            (&bob as &Wizard).fly();
+            (&bob as &dyn Wizard).fly();
             Wizard::fly(&bob);
             Pilot::fly(&bob);
-            println!("{} {}",
-                     Human::name(),
-                     <Human as Pilot>::name(),
-                     );
+            println!("{} {}", Human::name(), <Human as Pilot>::name(),);
 
             // Supertraits
             use std::fmt;
@@ -220,7 +220,7 @@ pub fn run() {
                 }
             }
             impl OutlinePrint for Point {}
-            let pt = Point { x: 46, y: 164642 };
+            let pt = Point { x: 46, y: 164_642 };
             pt.outline_print();
 
             // Implementing traits on external types
@@ -281,14 +281,23 @@ pub fn run() {
                 }
             }
 
+            // Automatic lifetime deducing
+            fn parse_context(context: Context) -> Result<(), &str> {
+                Parser { context: &context }.parse()
+            }
+            /*
+            // Is same as :
             fn parse_context<'s>(context: Context<'s>) -> Result<(), &'s str> {
                 Parser { context: &context }.parse()
             }
+            */
         }
         // ------------------------------
         // Lifetime bounds on references to feneric type
         {
-            struct Ref<'a, T>(&'a T) where T: 'a;
+            struct Ref<'a, T>(&'a T)
+            where
+                T: 'a;
         }
         // ------------------------------
         // Inference of trait object lifetimes
@@ -302,21 +311,21 @@ pub fn run() {
             impl<'a> Red for Ball<'a> {}
 
             let num = 5;
-            let obj = Box::new(Ball { diameter: &num }) as Box<Red>;
+            let obj = Box::new(Ball { diameter: &num }) as Box<dyn Red>;
         }
     }
     // ------------------------------
     // Summary
     use std::fmt::Display;
     fn longest_with_an_announcement<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
-        where
-            T: Display,
-        {
-            println!("Announcement! {}", ann);
-            if x.len() > y.len() {
-                x
-            } else {
-                y
-            }
+    where
+        T: Display,
+    {
+        println!("Announcement! {}", ann);
+        if x.len() > y.len() {
+            x
+        } else {
+            y
         }
+    }
 }

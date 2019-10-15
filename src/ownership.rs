@@ -12,7 +12,7 @@ pub fn run() {
 
     take_ownership(s2); // The string goes to never return
 
-    fn borrowing(s: &String) -> usize {
+    fn borrowing(s: &str) -> usize {
         s.len()
     }
     fn add_stuff(s: &mut String) {

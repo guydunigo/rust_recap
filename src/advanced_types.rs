@@ -5,9 +5,11 @@ pub fn run() {
     // Type aliases
     {
         type Kilometers = i32;
-        type Thunk = Box<Fn() + Send + 'static>; // You wouldn't repeat that everywhere, would you ?
+        type Thunk = Box<dyn Fn() + Send + 'static>; // You wouldn't repeat that everywhere, would you ?
         let f: Thunk = Box::new(|| println!("hi"));
-        fn takes_long_type(f: Thunk) { f(); }
+        fn takes_long_type(f: Thunk) {
+            f();
+        }
         takes_long_type(f);
     }
     // ------------------------------

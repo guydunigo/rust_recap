@@ -17,48 +17,50 @@ pub fn run() {
 
         // println!("{}", expensive_closure(4));
 
-        use std::collections::HashMap;
         use std::collections::hash_map::Entry;
+        use std::collections::HashMap;
         use std::hash::Hash;
 
         struct Cacher<T, U>
-            where T: Fn(U) -> U,
-                  U: Copy + Eq + Hash
-                  {
-                      calculation: T,
-                      values: HashMap<U, U> // Option<U>,
-                  }
+        where
+            T: Fn(U) -> U,
+            U: Copy + Eq + Hash,
+        {
+            calculation: T,
+            values: HashMap<U, U>, // Option<U>,
+        }
 
         impl<T, U> Cacher<T, U>
-            where T: Fn(U) -> U,
-                  U: Copy + Eq + Hash
-                  {
-                      fn new(closure: T) -> Cacher<T, U> {
-                          Cacher {
-                              calculation: closure,
-                              values: HashMap::new()
-                          }
-                      }
+        where
+            T: Fn(U) -> U,
+            U: Copy + Eq + Hash,
+        {
+            fn new(closure: T) -> Cacher<T, U> {
+                Cacher {
+                    calculation: closure,
+                    values: HashMap::new(),
+                }
+            }
 
-                      fn value(&mut self, arg: U) -> U {
-                          match self.values.entry(arg) {
-                              Entry::Occupied(v) => v.get().clone(),
-                              Entry::Vacant(value) => {
-                                  let v = (self.calculation)(arg);
-                                  value.insert(v);
-                                  v
-                              }
-                          }
-                          // match self.values.get(&arg) {
-                          //     Some(v) => v.clone(),
-                          //     None => {
-                          //         let v = (self.calculation)(arg);
-                          //         self.values.insert(arg, v);
-                          //         v
-                          //     },
-                          // }
-                      }
-                  }
+            fn value(&mut self, arg: U) -> U {
+                match self.values.entry(arg) {
+                    Entry::Occupied(v) => *v.get(),
+                    Entry::Vacant(value) => {
+                        let v = (self.calculation)(arg);
+                        value.insert(v);
+                        v
+                    }
+                }
+                // match self.values.get(&arg) {
+                //     Some(v) => v.clone(),
+                //     None => {
+                //         let v = (self.calculation)(arg);
+                //         self.values.insert(arg, v);
+                //         v
+                //     },
+                // }
+            }
+        }
 
         let mut ec = Cacher::new(expensive_closure);
         println!("{}", ec.value(3));
@@ -147,7 +149,7 @@ pub fn run() {
         println!("{}", do_twice(add_one, 24));
 
         // Returning closures
-        fn return_closure(x: i32) -> Box<Fn(i32) -> i32> {
+        fn return_closure(x: i32) -> Box<dyn Fn(i32) -> i32> {
             Box::new(move |y| y + x)
         }
         println!("{}", return_closure(42)(10));

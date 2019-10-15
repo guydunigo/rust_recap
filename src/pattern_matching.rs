@@ -13,28 +13,27 @@ pub fn run() {
 
         if let Some(3) = var {
             println!("this is 3");
-        } else if let None = var {
+        } else if let None = var { // better use .is_none()
             // ...
         }
 
-        let mut stack = vec![1,422,5];
+        let mut stack = vec![1, 422, 5];
         while let Some(top) = stack.pop() {
             println!("{}", top);
         }
 
-        let stack = vec![1,422,5];
+        let stack = vec![1, 422, 5];
         for (index, value) in stack.iter().enumerate() {
             println!("{} is at index {}", value, index);
         }
 
         let (x, y, z) = (1, 2, 3);
 
-        fn print_coordinates(&(x, y): &(i32, i32)) {
+        fn print_coordinates((x, y): (i32, i32)) {
             println!("Current location: ({}, {})", x, y);
         }
         let point = (3, 5);
-        print_coordinates(&point);
-
+        print_coordinates(point);
     }
     // ------------------------------
     // Matching helpers
@@ -45,14 +44,14 @@ pub fn run() {
             // match multiple patterns :
             4 | 6 => println!("Four or six"),
             // ranges : (4 and 10 included) (`..=` can also be used)
-            4 ... 10 => println!("Small value"),
+            4..=10 => println!("Small value"),
             _ => println!("Any"),
         }
 
         let c = 'c';
         match c {
-            'a' ... 'j' => println!("early letter"),
-            'k' ... 'z' => println!("late letter"),
+            'a'..='j' => println!("early letter"),
+            'k'..='z' => println!("late letter"),
             _ => println!("something else"),
         }
 
@@ -83,7 +82,8 @@ pub fn run() {
         match p {
             Point { x: 0, y } => println!("Axe des abscisses"),
             Point { x, y: 0 } => println!("Axe des ordonnées"),
-            Point { x: _, y } => println!("Something "),
+            Point { y, .. } => println!("Something "),
+            // Same as : Point { x: _, y } => println!("Something "),
         }
 
         // Enums
@@ -95,36 +95,22 @@ pub fn run() {
         }
         let msg = Message::ChangeColor(0, 160, 255);
         match msg {
-            Message::Quit => {
-                println!("The Quit variant has no data to destructure.")
-            },
+            Message::Quit => println!("The Quit variant has no data to destructure."),
             Message::Move { x, y } => {
-                println!(
-                    "Move in the x direction {} and in the y direction {}",
-                    x,
-                    y
-                    );
+                println!("Move in the x direction {} and in the y direction {}", x, y);
             }
             Message::Write(text) => println!("Text message: {}", text),
             Message::ChangeColor(r, g, b) => {
-                println!(
-                    "Change the color to red {}, green {}, and blue {}",
-                    r,
-                    g,
-                    b
-                    )
+                println!("Change the color to red {}, green {}, and blue {}", r, g, b)
             }
         }
 
         // references
-        let points = vec![ Point { x: 0, y: 0 } ];
-        let sum_of_squares: i32 = points
-            .iter()
-            .map(|&Point { x, y }| x * x + y * y)
-            .sum();
+        let points = vec![Point { x: 0, y: 0 }];
+        let sum_of_squares: i32 = points.iter().map(|&Point { x, y }| x * x + y * y).sum();
 
         // Combinated
-        let ((feet, inches), Point {x, y}) = ((3, 10), Point { x: 3, y: -10 });
+        let ((feet, inches), Point { x, y }) = ((3, 10), Point { x: 3, y: -10 });
     }
     // ------------------------------
     // Ignoring
@@ -151,22 +137,20 @@ pub fn run() {
         match numbers {
             (first, .., last) => {
                 println!("Some numbers: {}, {}", first, last);
-            },
+            }
         }
     }
     // ------------------------------
     // ref and ref mut
     {
         let mut robot_name = Some(String::from("Bors"));
-        match robot_name {
-            Some(ref name) => println!("Found a name {}", name),
-            None => (),
+        if let Some(ref name) = robot_name {
+            println!("Found a name {}", name);
         }
         println!("robot_name is: {:?}", robot_name);
 
-        match robot_name {
-            Some(ref mut name) => *name = String::from("Another name"),
-            None => (),
+        if let Some(ref mut name) = robot_name {
+            *name = String::from("Another name");
         }
         println!("robot_name is: {:?}", robot_name);
     }
@@ -200,15 +184,11 @@ pub fn run() {
         let msg = Message::Hello { id: 5 };
 
         match msg {
-            Message::Hello { id: id_variable @ 3...7 } => {
-                println!("Found an id in range: {}", id_variable)
-            },
-            Message::Hello { id: 10...12 } => {
-                println!("Found an id in another range")
-            },
-            Message::Hello { id } => {
-                println!("Found some other id: {}", id)
-            },
+            Message::Hello {
+                id: id_variable @ 3..=7,
+            } => println!("Found an id in range: {}", id_variable),
+            Message::Hello { id: 10..=12 } => println!("Found an id in another range"),
+            Message::Hello { id } => println!("Found some other id: {}", id),
         }
     }
 }

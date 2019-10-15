@@ -86,10 +86,9 @@ impl Post {
         }
     }
     fn add_text(&mut self, text: &str) {
-        match self.state {
-            PostState::Draft => self.content.push_str(text),
-            _ => (),
-        };
+        if let PostState::Draft = self.state {
+            self.content.push_str(text);
+        }
     }
     fn content(&self) -> &str {
         match self.state {

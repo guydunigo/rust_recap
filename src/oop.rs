@@ -9,7 +9,7 @@ pub fn run() {
         }
 
         struct Screen {
-            components: Vec<Box<Draw>>,
+            components: Vec<Box<dyn Draw>>,
         }
 
         impl Screen {
@@ -35,10 +35,10 @@ pub fn run() {
             }
         }
 
-        let a: Vec<Box<Draw>> = vec![
+        let a: Vec<Box<dyn Draw>> = vec![
             Box::new(Button {}),
             Box::new(Slider {}),
-            Box::new(Button {})
+            Box::new(Button {}),
         ];
         let screen = Screen { components: a };
         screen.run();
@@ -50,7 +50,7 @@ pub fn run() {
 
 struct Post {
     content: String,
-    state: Option<Box<State>>,
+    state: Option<Box<dyn State>>,
 }
 
 impl Post {
@@ -84,10 +84,9 @@ trait State {
     fn content<'a>(&self, text: &'a str) -> &'a str {
         ""
     }
-    fn add_text(&self, text: &mut String, text_to_add: &str) {
-    }
-    fn request_review(self: Box<Self>) -> Box<State>;
-    fn approve(self: Box<Self>) -> Box<State>;
+    fn add_text(&self, text: &mut String, text_to_add: &str) {}
+    fn request_review(self: Box<Self>) -> Box<dyn State>;
+    fn approve(self: Box<Self>) -> Box<dyn State>;
 }
 
 struct Draft {}
@@ -95,20 +94,20 @@ impl State for Draft {
     fn add_text(&self, text: &mut String, text_to_add: &str) {
         text.push_str(text_to_add);
     }
-    fn request_review(self: Box<Self>) -> Box<State> {
+    fn request_review(self: Box<Self>) -> Box<dyn State> {
         Box::new(Reviewing {})
     }
-    fn approve(self: Box<Self>) -> Box<State> {
+    fn approve(self: Box<Self>) -> Box<dyn State> {
         self
     }
 }
 
 struct Reviewing {}
 impl State for Reviewing {
-    fn approve(self: Box<Self>) -> Box<State> {
+    fn approve(self: Box<Self>) -> Box<dyn State> {
         Box::new(Approved {})
     }
-    fn request_review(self: Box<Self>) -> Box<State> {
+    fn request_review(self: Box<Self>) -> Box<dyn State> {
         self
     }
 }
@@ -118,10 +117,10 @@ impl State for Approved {
     fn content<'a>(&self, text: &'a str) -> &'a str {
         text
     }
-    fn request_review(self: Box<Self>) -> Box<State> {
+    fn request_review(self: Box<Self>) -> Box<dyn State> {
         self
     }
-    fn approve(self: Box<Self>) -> Box<State> {
+    fn approve(self: Box<Self>) -> Box<dyn State> {
         self
     }
 }

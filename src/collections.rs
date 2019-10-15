@@ -38,10 +38,10 @@ pub fn run() {
             Types::Float(3.2),
         ];
         for i in &row {
-            match i {
-                &Types::Int(_) => println!("int"),
-                &Types::Text(_) => println!("text"),
-                &Types::Float(_) => println!("float"),
+            match *i {
+                Types::Int(_) => println!("int"),
+                Types::Text(_) => println!("text"),
+                Types::Float(_) => println!("float"),
             }
         }
     }
