@@ -43,7 +43,7 @@ pub fn run() {
     struct Rectangle {
         w: u32,
         h: u32,
-    };
+    }
 
     impl Rectangle {
         fn area(&self) -> u32 {

@@ -4,6 +4,7 @@ description = "Recap code for Rust"
 version = "0.1.0"
 authors = ["GONI Guillaume <gdn3@live.fr>"]
 license = "MIT OR Apache-2.0"
+edition = "2021"
 
 # default profiles :
 [profile.dev]

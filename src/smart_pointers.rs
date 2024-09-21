@@ -35,7 +35,7 @@ pub fn run() {
             l: &'a List,
         }
         impl<'a> IterList<'a> {
-            pub fn new(l: &'a List) -> IterList {
+            pub fn new(l: &'a List) -> IterList<'a> {
                 IterList { l }
             }
         }
@@ -169,7 +169,7 @@ pub fn run() {
             l: &'a List,
         }
         impl<'a> IterList<'a> {
-            pub fn new(l: &'a List) -> IterList {
+            pub fn new(l: &'a List) -> IterList<'a> {
                 IterList { l }
             }
         }
